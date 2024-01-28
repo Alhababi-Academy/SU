@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:su_project/config/config.dart';
+import 'package:su_project/home/BarCode/viewQRCode.dart';
 import 'package:su_project/home/Posts/AllPosts.dart';
 
 import 'Authentication/login.dart';
@@ -208,7 +209,14 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BarcodeScanPage(),
+                            ),
+                          );
+                        },
                         child: Card(
                           color: SU.backGroundContainerColor,
                           child: Container(

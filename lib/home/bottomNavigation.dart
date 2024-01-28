@@ -14,7 +14,6 @@ class BottomNavigationBarCustom extends StatefulWidget {
 class _BottomNavigationBarCustom extends State<BottomNavigationBarCustom> {
   final List<Widget> PagesDown = [
     const HomePage(),
-    const HomePage(),
     const UserProfile(),
   ];
 
@@ -41,12 +40,7 @@ class _BottomNavigationBarCustom extends State<BottomNavigationBarCustom> {
             label: 'Home', // Label for the item is set to 'Home'
           ),
           // Defines the second item in the bottom navigation bar
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.qr_code_scanner_rounded,
-            ), // Icon for the item is set to shield
-            label: 'Passwords', // Label for the item is set to 'Passwords'
-          ),
+
           // Defines the third item in the bottom navigation bar
           BottomNavigationBarItem(
             icon: Icon(Icons.person), // Icon for the item is set to person

@@ -53,6 +53,7 @@ dev_dependencies:
   firebase_storage: ^11.4.0
   firebase_core: ^2.20.0
   flutter_svg: ^2.0.9
+  qr_code_scanner: ^1.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
