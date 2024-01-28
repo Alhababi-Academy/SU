@@ -267,11 +267,11 @@ class _loginPage extends State<loginPage> {
       },
     );
     // the next Functoin
-    AddingUser();
+    singinig();
   }
   // we are siging the user using this firebase functoin
 
-  AddingUser() async {
+  singinig() async {
     // Verify the phone number with Firebase Authentication
     SU.firebaseAuth!
         .signInWithEmailAndPassword(

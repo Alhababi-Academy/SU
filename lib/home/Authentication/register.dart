@@ -298,9 +298,6 @@ class _ReigsterPage extends State<ReigsterPage> {
     register();
   }
 
-// Empty Variable
-  String? currentUser;
-
   void register() async {
     // we are siging the user using this firebase functoin
     SU.firebaseAuth!
@@ -313,7 +310,7 @@ class _ReigsterPage extends State<ReigsterPage> {
         // if everyting is good
         .then((auth) {
       // this will store the user ID
-      currentUser = auth.user!.uid;
+      String currentUser = auth.user!.uid;
       // This will go to function to save the data
       saveUserInfoToFireStor(currentUser);
       // if there is error

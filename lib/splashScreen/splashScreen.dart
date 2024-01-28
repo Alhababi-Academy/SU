@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:su_project/config/config.dart';
 import 'package:su_project/home/Authentication/login.dart';
+import 'package:su_project/home/bottomNavigation.dart';
 
 class splashScreen extends StatefulWidget {
   const splashScreen({super.key});
@@ -23,8 +25,14 @@ class _splashScreenState extends State<splashScreen> {
     // this will take 4 seconds
     Timer(const Duration(seconds: 4), () async {
       // go to another page
-      Route route = MaterialPageRoute(builder: (_) => const loginPage());
-      Navigator.pushAndRemoveUntil(context, route, (route) => false);
+      if (SU.firebaseAuth?.currentUser != null) {
+        Route route = MaterialPageRoute(
+            builder: (_) => const BottomNavigationBarCustom());
+        Navigator.pushAndRemoveUntil(context, route, (route) => false);
+      } else {
+        Route route = MaterialPageRoute(builder: (_) => const loginPage());
+        Navigator.pushAndRemoveUntil(context, route, (route) => false);
+      }
     });
   }
 

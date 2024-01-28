@@ -41,7 +41,7 @@ class _ResetPassword extends State<ResetPassword> {
                 SizedBox(
                   width: 180,
                   // The image widget
-                  child: Image.asset("images/login.png"),
+                  child: Image.asset("images/logo.jpg"),
                 ),
                 // A container that will provide margin and padding around its child
                 Container(
@@ -103,6 +103,7 @@ class _ResetPassword extends State<ResetPassword> {
                           style: TextStyle(
                             // the size of the text inside the button
                             fontSize: 18,
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

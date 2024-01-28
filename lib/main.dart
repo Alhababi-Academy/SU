@@ -2,11 +2,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 // this is for the authentication from firebase
 import 'package:firebase_auth/firebase_auth.dart';
+// this is to let the app know we are
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 // this is for all the wigets
 import 'package:flutter/material.dart';
-// this is to let the app know we are
-import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:su_project/config/config.dart';
 import 'package:su_project/firebase_options.dart';

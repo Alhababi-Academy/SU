@@ -52,6 +52,7 @@ dev_dependencies:
   shared_preferences: ^2.2.2
   firebase_storage: ^11.4.0
   firebase_core: ^2.20.0
+  flutter_svg: ^2.0.9
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:su_project/config/config.dart';
 import 'package:su_project/home/userHome.dart';
+import 'package:su_project/home/userProfile.dart';
 
 class BottomNavigationBarCustom extends StatefulWidget {
   const BottomNavigationBarCustom({super.key});
@@ -13,7 +15,7 @@ class _BottomNavigationBarCustom extends State<BottomNavigationBarCustom> {
   final List<Widget> PagesDown = [
     const HomePage(),
     const HomePage(),
-    const HomePage(),
+    const UserProfile(),
   ];
 
   int currentIndex = 0;
@@ -40,7 +42,9 @@ class _BottomNavigationBarCustom extends State<BottomNavigationBarCustom> {
           ),
           // Defines the second item in the bottom navigation bar
           BottomNavigationBarItem(
-            icon: Icon(Icons.shield), // Icon for the item is set to shield
+            icon: Icon(
+              Icons.qr_code_scanner_rounded,
+            ), // Icon for the item is set to shield
             label: 'Passwords', // Label for the item is set to 'Passwords'
           ),
           // Defines the third item in the bottom navigation bar
@@ -52,9 +56,11 @@ class _BottomNavigationBarCustom extends State<BottomNavigationBarCustom> {
         currentIndex:
             currentIndex, // Sets the current index of the bottom navigation bar
         selectedItemColor:
-            Theme.of(context).primaryColor, // Sets the selected item color
+            SU.backGroundContainerColor, // Sets the selected item color
         onTap:
             _onItemTapped, // Sets the onTap function for handling item tap events
+        backgroundColor: SU.primaryColor,
+        unselectedItemColor: SU.backGroundContainerColor.withOpacity(0.4),
       ),
       // Defines the body of the Scaffold widget
       body: PagesDown.elementAt(
