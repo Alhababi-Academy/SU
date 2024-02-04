@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:su_project/Admin/AdminHomePage.dart';
 import 'package:su_project/config/config.dart';
 import 'package:su_project/home/Authentication/register.dart';
 import 'package:su_project/home/Authentication/resetPassword.dart';
@@ -282,9 +283,8 @@ class _loginPage extends State<loginPage> {
     )
         // if everyting is good
         .then((auth) {
-      // go to the home page screen
-      Route route = MaterialPageRoute(builder: (_) => const HomePage());
-      Navigator.pushAndRemoveUntil(context, route, (route) => false);
+      String? UID = auth.user?.uid;
+      getData(UID!);
     }).catchError(
       (error) {
         // Authentication failed
@@ -300,20 +300,20 @@ class _loginPage extends State<loginPage> {
     );
   }
 
-  // getData(String currentUser) async {
-  //   await SU.firebaseFirestore
-  //       ?.collection("users")
-  //       .doc(currentUser)
-  //       .get()
-  //       .then((data) async {
-  //     String fullName = data.get('fullName');
-  //     String email = data.get('email');
-  //     await SU.sharedPreferences?.setString("fullName", fullName);
-  //     await SU.sharedPreferences?.setString("email", email);
-  //   }).then((value) {
-  //     Route route =
-  //         MaterialPageRoute(builder: (_) => BottomNavigationBarCustom());
-  //     Navigator.push(context, route);
-  //   });
-  // }
+  getData(String currentUser) async {
+    await SU.firestore
+        ?.collection("users")
+        .doc(currentUser)
+        .get()
+        .then((data) async {
+      String userType = data.get('userType');
+      if (userType == "admin") {
+        Route route = MaterialPageRoute(builder: (_) => const AdminHomePage());
+        Navigator.pushAndRemoveUntil(context, route, (route) => false);
+      } else {
+        Route route = MaterialPageRoute(builder: (_) => const HomePage());
+        Navigator.pushAndRemoveUntil(context, route, (route) => false);
+      }
+    }).then((value) {});
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:su_project/home/BarCode/avilalbeRooms.dart';
 
 class BarcodeScanPage extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class _BarcodeScanPageState extends State<BarcodeScanPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? Newcontroller;
   String barcodeResult = 'No data';
+  bool isScanned = false; // To prevent multiple navigations.
 
   void _onQRViewCreated(QRViewController controller) {
     this.Newcontroller = controller;
@@ -17,6 +19,13 @@ class _BarcodeScanPageState extends State<BarcodeScanPage> {
       setState(() {
         barcodeResult = scanData.code ?? 'No data';
       });
+      if (!isScanned && scanData.code != null) {
+        // Ensure scan data is not null.
+        isScanned = true; // Prevent multiple navigations.
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => AvailableRoomsPage()),
+        );
+      }
     });
   }
 

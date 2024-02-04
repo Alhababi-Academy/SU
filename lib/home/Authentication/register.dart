@@ -342,6 +342,7 @@ class _ReigsterPage extends State<ReigsterPage> {
         "uid": currentUser.toString(),
         // string user full name,
         "fullName": fullName.text.trim(),
+        "userType": "user",
         // stroing the email storing
         "email": emailTextEditingController.text.trim().toLowerCase(),
         // storing the address
