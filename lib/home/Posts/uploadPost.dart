@@ -1,41 +1,58 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as DateFormatting;
 import 'package:su_project/config/config.dart';
 import 'package:su_project/widgets/customTextFieldRegsiterPage.dart';
 import 'package:su_project/widgets/errorDialog.dart';
 import 'package:su_project/widgets/loadingDialog.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class UploadPost extends StatefulWidget {
-  const UploadPost({super.key});
+  const UploadPost({Key? key}) : super(key: key);
 
   @override
-  State<UploadPost> createState() => _UploadPost();
+  State<UploadPost> createState() => _UploadPostState();
 }
 
-class _UploadPost extends State<UploadPost> {
-  // Title empty variable
+class _UploadPostState extends State<UploadPost> {
   TextEditingController _PostTitle = TextEditingController();
-  // Dsecription empty variable
   TextEditingController _PostDescription = TextEditingController();
+  TextEditingController _level = TextEditingController();
 
-  String selectedType = 'Post';
+  TextEditingController _colleges = TextEditingController();
+
+  File? _image;
+  File? _video;
+  final picker = ImagePicker();
+
+  @override
+  void initState() {
+    callingTheData();
+    super.initState();
+  }
+
+  callingTheData() async {
+    String? currentUser = SU.firebaseAuth?.currentUser?.uid;
+    await SU.firestore?.collection("users").doc(currentUser).get().then(
+      (results) {
+        _colleges.text = results['College'];
+        _level.text = results['Level'];
+      },
+    );
+    print(_colleges.text);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // The whole screen widget
     return Scaffold(
       appBar: AppBar(),
-      // White background color
       backgroundColor: Colors.white,
-      // All the widgets will be in the safe area
       body: SafeArea(
-        // This will center the widgets
         child: Center(
-          // The widgets will be scrollable
           child: SingleChildScrollView(
-            // In the Column, we can put multiple widgets
             child: Column(
               children: [
-                // Putting the image in a box that has a width of 180
                 const Text(
                   "Post & Note",
                   style: TextStyle(
@@ -65,11 +82,6 @@ class _UploadPost extends State<UploadPost> {
                         isSecure: false,
                         // wecan edit, true
                         enabledEdit: true,
-                        // icon
-                        prefixIcon: const Icon(
-                          Icons.post_add,
-                          color: SU.primaryColor,
-                        ),
                         // we are storing here the email that the user write
                         textEditingController: _PostTitle,
                         textInputType: TextInputType.text,
@@ -88,108 +100,123 @@ class _UploadPost extends State<UploadPost> {
                         ),
                       ),
                       // Custom text field for password input
-                      customTextFieldRegsiterPage(
-                        // is it hidden, yes
-                        isSecure: false,
-                        // enable edit, true
-                        enabledEdit: true,
-                        // we storing here the passwrod that the user write
-                        textEditingController: _PostDescription,
-                        // keybaord style
-                        textInputType: TextInputType.visiblePassword,
-                        hint:
-                            "We would suggest that the school campous can come with some other things which will be included*",
 
-                        // icon
-                        prefixIcon: const Icon(
-                          Icons.description,
-                          color: SU.primaryColor,
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: SU
+                                .backgroundColor, // Use the correct color for the border
+                            width: 1.0, // Adjust the border thickness as needed
+                          ),
                         ),
-                      ),
-
-                      // space
-
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Text(
-                        "Type",
-                        style: TextStyle(
-                          color: SU.primaryColor,
-                          fontWeight: FontWeight.bold,
+                        child: TextField(
+                          controller: _PostDescription,
+                          maxLines: 8,
+                          cursorColor: Colors.black,
+                          decoration: InputDecoration(
+                            hintText: "My Parking has a problem",
+                            hintStyle: const TextStyle(
+                                fontSize: 12,
+                                color: Colors
+                                    .grey), // Adjust the hint text style as needed
+                            fillColor: Colors.transparent,
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                  color: SU.backgroundColor, width: 1.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                  color: SU.primaryColor, width: 1.0),
+                            ),
+                            contentPadding: const EdgeInsets.only(
+                              left: 16,
+                              top: 8,
+                              bottom: 8,
+                              right: 16,
+                            ), // Adjust padding to ensure text is vertically centered
+                          ),
                         ),
                       ),
 
                       Container(
-                        height: 40,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: SU.backgroundColor, // Border color
-                            width: 1.0, // Border width
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: pickImage,
+                              child: const Text('Upload Image'),
+                            ),
+                            if (_image != null)
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Image.file(
+                                  _image!,
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: pickVideo,
+                              child: const Text('Upload Video'),
+                            ),
+                            if (_video != null)
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Icon(
+                                  Icons.video_library,
+                                  size: 200,
+                                ),
+                              ),
+                            const SizedBox(height: 20),
+                            Center(
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      SU.primaryColor),
+                                ),
+                                onPressed: () {
+                                  SavePost();
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 4, horizontal: 12),
+                                    child: Text(
+                                      'Save',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
                         ),
-                        child: DropdownButton(
-                          underline: const SizedBox(),
-                          isExpanded: true,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          value: selectedType,
-                          items: ['Post', 'Note'].map((choosedType) {
-                            return DropdownMenuItem(
-                              value: choosedType,
-                              child: Text(choosedType),
-                            );
-                          }).toList(),
-                          onChanged: (newChoosedType) {
-                            setState(
-                              () {
-                                selectedType = newChoosedType!;
-                              },
-                            );
-                          },
-                        ),
-                      )
-                      // Custom text field for email input
+                      ),
                     ],
                   ),
-                ),
-                Column(
-                  children: [
-                    // Elevated button for login
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        // the color of the button
-                        backgroundColor: MaterialStateProperty.all(
-                          SU.primaryColor,
-                        ),
-                      ),
-                      onPressed: () {
-                        // the Function when you click the button
-                        SavePost();
-                      },
-                      // putting space in the button
-                      child: const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        // the text inside the button
-                        child: Text(
-                          'Save',
-                          //. the style for the text inside the button
-                          style: TextStyle(
-                            color: Colors.white,
-                            // the size of the text inside the button
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    // space
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    // Row for "Forget Password?" text and a clickable text
-                  ],
                 ),
               ],
             ),
@@ -199,84 +226,99 @@ class _UploadPost extends State<UploadPost> {
     );
   }
 
-  Future<void> SavePost() async {
-    // Check if both email and password fields are not empty
-    if (_PostDescription.text.isNotEmpty && _PostDescription.text.isNotEmpty) {
-      // If not empty, call the `uploadToStorage` function
-      SavePostToFirestore();
-    } else {
-      // If empty, display an error dialog
-      displayDialog();
+  Future pickImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
     }
   }
 
-// this if the email or passwrod is empty
-  displayDialog() {
-    // showing the pop screen
+  Future pickVideo() async {
+    final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _video = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> SavePost() async {
+    if (_PostDescription.text.isNotEmpty && _PostTitle.text.isNotEmpty) {
+      UploadData();
+    } else {
+      displayDialog("Please fill in all the fields.");
+    }
+  }
+
+  void displayDialog(String message) {
     showDialog(
       context: context,
-      // it will take the avialble space
       barrierDismissible: false,
       builder: (c) {
-        // this is the error
-        return const ErrorDialogCustom(
-          message: "Fill up the form",
-        );
+        return ErrorDialogCustom(message: message);
       },
     );
   }
 
-// functoin to show dialog
-  SavePostToFirestore() async {
-    // showing the pop screen
+  Future<void> UploadData() async {
+    String? currentUser = SU.firebaseAuth?.currentUser?.uid;
+
+    String imageUrl = '';
+    String videoUrl = '';
+
     showDialog(
       context: context,
       builder: (c) {
-        // loaidn dialog
         return const LoadingDialogCustom(
-          // the message inside the dialog
           message: "Uploading Post Please Wait...",
         );
       },
     );
-    // the next Functoin
-    UploadData();
-  }
 
-  // this function to store data in the Cloud Firebase
-  UploadData() async {
-    String? currentUser = SU.firebaseAuth?.currentUser?.uid;
-    // the start of creating users collection in the database
-    await SU.firestore!
-        .collection("posts")
-        // saving the ID there
-        .add(
-      {
-        // ID
-        "uploadedBy": currentUser.toString(),
-        // string user full name,
-        "postTitle": _PostTitle.text.trim(),
-        // stroing the email storing
-        "postDescription": _PostDescription.text.trim().toLowerCase(),
-        // storing the date of registering
-        "uploadedOn": DateFormatting.DateFormat('dd-mm-yyyy')
-            .format(DateTime.now())
-            .toString(),
-        "type": selectedType,
-        "likesCount": 0,
-      },
-      // everything is good
-    ).then((value) {
-      // remove loading dialog
+    if (_image != null) {
+      imageUrl = await uploadFileToFirebaseStorage(_image!, 'images');
+    }
+
+    if (_video != null) {
+      videoUrl = await uploadFileToFirebaseStorage(_video!, 'videos');
+    }
+
+    await SU.firestore!.collection("posts").add({
+      "uploadedBy": currentUser,
+      "postTitle": _PostTitle.text.trim(),
+      "postDescription": _PostDescription.text.trim().toLowerCase(),
+      "uploadedOn": DateFormatting.DateFormat('dd-MM-yyyy')
+          .format(DateTime.now())
+          .toString(),
+      "likesCount": 0,
+      'College': _colleges.text.trim(),
+      'Level': _level.text.trim(),
+      "imageUrl": imageUrl,
+      "videoUrl": videoUrl,
+    }).then((value) {
       Navigator.pop(context);
-      // it will go to the login page
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Post was uploaded')),
+        const SnackBar(content: Text('Post was uploaded successfully')),
       );
       setState(() {
-        _PostDescription.text = "";
-        _PostDescription.text = "";
+        _PostTitle.clear();
+        _PostDescription.clear();
+        _image = null;
+        _video = null;
       });
     });
+  }
+
+  Future<String> uploadFileToFirebaseStorage(
+      File file, String folderPath) async {
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference reference =
+        FirebaseStorage.instance.ref().child('$folderPath/$fileName');
+
+    UploadTask uploadTask = reference.putFile(file);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    return await taskSnapshot.ref.getDownloadURL();
   }
 }

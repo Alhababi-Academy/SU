@@ -68,18 +68,30 @@ class _AvailableRoomsPageState extends State<AvailableRoomsPage> {
               ),
             ),
           ),
+// 'Expanded' widget يجعل العنصر الداخلي يأخذ المساحة المتاحة في العمود أو الصف.
           Expanded(
+            // 'child' هنا يحدد العنصر الفرعي لـ Expanded والذي سيتوسع ليشغل المساحة.
             child: ListView.builder(
+              // 'itemCount' يحدد عدد العناصر التي ستظهر في القائمة.
               itemCount: filteredRooms.length,
+              // 'itemBuilder' هو الدالة التي تبني وتعيد كل عنصر داخل القائمة.
               itemBuilder: (context, index) {
+                // 'Card' widget يستخدم لإنشاء بطاقة تحتوي على محتويات.
                 return Card(
+                  // 'margin' يحدد الهوامش حول البطاقة لتبقى مسافة بينها وبين العناصر الأخرى.
                   margin:
                       const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  // 'child' هنا يحدد محتوى البطاقة وهو 'ListTile'.
                   child: ListTile(
+                    // 'title' يحدد النص الرئيسي داخل 'ListTile'.
                     title: Text(filteredRooms[index]),
+                    // 'onTap' هو الحدث الذي يحدث عند النقر على العنصر.
                     onTap: () {
+                      // 'setState' تستخدم لتغيير حالة التطبيق وإعادة بناء الواجهة بمعلومات جديدة.
                       setState(() {
+                        // تحديد الغرفة المختارة بناءً على العنصر الذي تم النقر عليه.
                         selectedRoom = filteredRooms[index];
+                        // طباعة الغرفة المختارة في منفذ التصحيح (console).
                         print(selectedRoom);
                       });
                     },

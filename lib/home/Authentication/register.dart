@@ -22,7 +22,13 @@ class _ReigsterPage extends State<ReigsterPage> {
   TextEditingController fullName = TextEditingController();
   // address empty variable
   TextEditingController address = TextEditingController();
-
+  TextEditingController College = TextEditingController();
+  // address empty variable
+  TextEditingController Level = TextEditingController();
+  List<String> colleges = ['BSIT', 'BSCS', 'BSCE', 'BSEE'];
+  List<String> levels = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+  String? selectedCollege;
+  String? selectedLevel;
   @override
   Widget build(BuildContext context) {
     // The whole screen widget
@@ -169,6 +175,85 @@ class _ReigsterPage extends State<ReigsterPage> {
                       const SizedBox(
                         height: 10,
                       ),
+
+                      // Custom text field for email input
+                      const Text(
+                        "College",
+                        style: TextStyle(
+                          color: SU.primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      DropdownButtonFormField<String>(
+                        value:
+                            selectedCollege, // This should match one of the items in the dropdown if not null
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.school,
+                            color: SU.primaryColor,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: SU.backgroundColor, width: 1),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedCollege = newValue;
+                          });
+                        },
+                        items: colleges
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        "Level",
+                        style: TextStyle(
+                          color: SU.primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      DropdownButtonFormField<String>(
+                        value: selectedLevel,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.layers,
+                            color: SU.primaryColor,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: SU.backgroundColor, width: 1),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedLevel = newValue;
+                          });
+                        },
+                        items: levels
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+
+                      // Sized Box Widget
+                      const SizedBox(
+                        height: 10,
+                      ),
                     ],
                   ),
                 ),
@@ -256,7 +341,9 @@ class _ReigsterPage extends State<ReigsterPage> {
     if (emailTextEditingController.text.isNotEmpty &&
         passworTextEditingController.text.isNotEmpty &&
         fullName.text.isNotEmpty &&
-        address.text.isNotEmpty) {
+        address.text.isNotEmpty &&
+        selectedCollege != null &&
+        selectedLevel != null) {
       // If not empty, call the `uploadToStorage` function
       uploadToStorage();
     } else {
@@ -342,11 +429,13 @@ class _ReigsterPage extends State<ReigsterPage> {
         "uid": currentUser.toString(),
         // string user full name,
         "fullName": fullName.text.trim(),
-        "userType": "user",
         // stroing the email storing
         "email": emailTextEditingController.text.trim().toLowerCase(),
         // storing the address
         "address": address.text.trim(),
+        "College": selectedCollege,
+        "Level": selectedLevel,
+        "userType": "user",
         // storing the date of registering
         "registedOn": DateFormatting.DateFormat('dd-mm-yyyy')
             .format(DateTime.now())
