@@ -11,8 +11,8 @@ class AllPosts extends StatefulWidget {
 }
 
 class _AllPostsState extends State<AllPosts> {
-  String? selectedCollege, selectedLevel, selectedCourse;
-  List<String> colleges = [], levels = [], courses = [];
+  String? selectedCollege, selectedLevel;
+  List<String> colleges = [], levels = [];
 
   @override
   void initState() {
@@ -24,22 +24,17 @@ class _AllPostsState extends State<AllPosts> {
     var postsSnapshot =
         await FirebaseFirestore.instance.collection('posts').get();
     var fetchedColleges = postsSnapshot.docs
-        .map((doc) => doc['college'] as String)
+        .map((doc) => doc['College'] as String)
         .toSet()
         .toList();
     var fetchedLevels = postsSnapshot.docs
-        .map((doc) => doc['level'] as String)
-        .toSet()
-        .toList();
-    var fetchedCourses = postsSnapshot.docs
-        .map((doc) => doc['course'] as String)
+        .map((doc) => doc['Level'] as String)
         .toSet()
         .toList();
 
     setState(() {
       colleges = fetchedColleges;
       levels = fetchedLevels;
-      courses = fetchedCourses;
     });
   }
 
@@ -50,10 +45,7 @@ class _AllPostsState extends State<AllPosts> {
       query = query.where('college', isEqualTo: selectedCollege);
     }
     if (selectedLevel != null && selectedLevel!.isNotEmpty) {
-      query = query.where('level', isEqualTo: selectedLevel);
-    }
-    if (selectedCourse != null && selectedCourse!.isNotEmpty) {
-      query = query.where('course', isEqualTo: selectedCourse);
+      query = query.where('Level', isEqualTo: selectedLevel);
     }
     return query.snapshots();
   }
@@ -94,16 +86,6 @@ class _AllPostsState extends State<AllPosts> {
                   }).toList(),
                   onChanged: (value) => setState(() => selectedLevel = value),
                 ),
-                DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedCourse,
-                  hint: const Text("Select Course"),
-                  items: courses.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                        value: value, child: Text(value));
-                  }).toList(),
-                  onChanged: (value) => setState(() => selectedCourse = value),
-                ),
               ],
             ),
           ),
@@ -114,7 +96,6 @@ class _AllPostsState extends State<AllPosts> {
                 setState(() {
                   selectedCollege = null;
                   selectedLevel = null;
-                  selectedCourse = null;
                 });
                 Navigator.of(context).pop();
               },
@@ -138,33 +119,23 @@ class _AllPostsState extends State<AllPosts> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                if (post['imageUrl'] != null)
-                  Image.network(
-                    post['imageUrl'],
-                    width: 100, // Adjusted for a smaller image display
-                    height: 100, // Fixed height for uniformity
-                    fit: BoxFit.cover,
-                  ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        post['postTitle'] ?? 'Untitled',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      Text(
-                        post['postDescription'] ?? 'No Description',
-                        style: TextStyle(color: Colors.grey.shade600),
-                      ),
-                    ],
-                  ),
+            if (post['imageUrl'] != null) // Check if imageUrl exists
+              SizedBox(
+                width: double.infinity, // Adjusted for full-width display
+                height: 200, // Set the desired height for the image
+                child: Image.network(
+                  post['imageUrl'],
+                  fit: BoxFit.cover,
                 ),
-              ],
+              ),
+            const SizedBox(height: 10),
+            Text(
+              post['postTitle'] ?? 'Untitled',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            Text(
+              post['postDescription'] ?? 'No Description',
+              style: TextStyle(color: Colors.grey.shade600),
             ),
             const SizedBox(height: 10),
             Row(
@@ -197,15 +168,6 @@ class _AllPostsState extends State<AllPosts> {
                 ),
               ],
             ),
-            if (post['videoUrl'] != null)
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    // Placeholder for future video functionality
-                  },
-                  child: const Text("View Video"),
-                ),
-              ),
           ],
         ),
       ),
